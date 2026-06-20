@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ให้เธอ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FBF3E3;
+    --cream-card:#FFFDF8;
+    --sage:#8FA77B;
+    --sage-dark:#5E7A4E;
+    --moss:#3C4A30;
+    --daisy-yellow:#F6C445;
+    --daisy-amber:#E8A23C;
+    --rose:#E3987F;
+    --ring: rgba(94,122,78,0.45);
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0;
+    padding:0;
+    height:100%;
+    overflow:hidden;
+    background: radial-gradient(120% 90% at 50% -10%, #FFFCF4 0%, var(--cream) 55%, #F4EAD3 100%);
+    font-family:'Sarabun', sans-serif;
+    color: var(--moss);
+  }
+
+  .hero{
+    position:relative;
+    z-index:2;
+    min-height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding: 0 24px 90px;
+  }
+
+  .eyebrow{
+    font-family:'Sarabun', sans-serif;
+    font-weight:600;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    font-size:0.78rem;
+    color: var(--sage-dark);
+    margin:0 0 14px;
+  }
+
+  h1{
+    font-family:'Mali', cursive;
+    font-weight:700;
+    font-size: clamp(1.7rem, 5vw, 3rem);
+    line-height:1.3;
+    margin:0 0 14px;
+    color: var(--moss);
+    max-width: 14ch;
+  }
+
+  .sub{
+    font-size: clamp(0.95rem, 2.4vw, 1.08rem);
+    color: rgba(60,74,48,0.72);
+    margin:0 0 34px;
+    max-width: 38ch;
+    line-height:1.7;
+  }
+
+  .btn-surprise{
+    font-family:'Mali', cursive;
+    font-weight:700;
+    font-size:1.15rem;
+    color: var(--cream-card);
+    background: linear-gradient(180deg, var(--sage) 0%, var(--sage-dark) 100%);
+    border:none;
+    border-radius:999px;
+    padding: 16px 38px;
+    cursor:pointer;
+    box-shadow: 0 10px 24px -8px rgba(94,122,78,0.55), inset 0 1px 0 rgba(255,255,255,0.25);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  .btn-surprise:hover{ transform: translateY(-2px); box-shadow: 0 14px 28px -8px rgba(94,122,78,0.6); }
+  .btn-surprise:active{ transform: translateY(0) scale(0.97); }
+  .btn-surprise:focus-visible{ outline:3px solid var(--ring); outline-offset:3px; }
+
+  /* ground strip */
+  .meadow-bg{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    height:64px;
+    z-index:1;
+    background:
+      linear-gradient(180deg, rgba(143,167,123,0) 0%, rgba(143,167,123,0.35) 60%, rgba(94,122,78,0.55) 100%);
+    pointer-events:none;
+  }
+  .meadow-bg::before{
+    content:"";
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:14px;
+    background-image: repeating-linear-gradient(
+      75deg,
+      var(--sage) 0 3px,
+      transparent 3px 16px
+    );
+    opacity:0.55;
+  }
+
+  /* daisy layer */
+  .daisy-layer{
+    position:fixed;
+    inset:0;
+    z-index:1;
+    pointer-events:none;
+    overflow:hidden;
+  }
+
+  .daisy-wrap{
+    position:absolute;
+    bottom:6px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    opacity:0;
+    transform: translateY(30px) scale(0.3);
+    animation: rise 0.85s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+
+  @keyframes rise{
+    to{ opacity:1; transform: translateY(0) scale(1); }
+  }
+
+  .daisy-sway{
+    transform-origin:bottom center;
+    animation: sway 3.2s ease-in-out infinite;
+  }
+
+  @keyframes sway{
+    0%,100%{ transform: rotate(var(--tilt-a)); }
+    50%{ transform: rotate(var(--tilt-b)); }
+  }
+
+  .daisy-svg{ display:block; }
+
+  .stem{
+    width:3px;
+    border-radius:2px;
+    background: var(--sage-dark);
+    margin-top:-4px;
+  }
+
+  /* overlay + card */
+  .overlay{
+    position:fixed;
+    inset:0;
+    z-index:5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    background: rgba(251,243,227,0.55);
+    backdrop-filter: blur(2px);
+    opacity:0;
+    pointer-events:none;
+    transition: opacity 0.35s ease;
+  }
+  .overlay.show{
+    opacity:1;
+    pointer-events:auto;
+  }
+
+  .card{
+    position:relative;
+    background: var(--cream-card);
+    border-radius:28px;
+    padding: 44px 34px 32px;
+    max-width:380px;
+    width:100%;
+    text-align:center;
+    box-shadow: 0 24px 60px -16px rgba(60,74,48,0.35);
+    transform: scale(0.82);
+    opacity:0;
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+  }
+  .overlay.show .card{
+    transform: scale(1);
+    opacity:1;
+  }
+
+  .corner-daisy{
+    position:absolute;
+    pointer-events:none;
+  }
+  .corner-daisy.tl{ top:-18px; left:-16px; width:54px; transform: rotate(-18deg); }
+  .corner-daisy.br{ bottom:-16px; right:-18px; width:46px; transform: rotate(24deg); }
+
+  .close-btn{
+    position:absolute;
+    top:14px; right:16px;
+    background:none;
+    border:none;
+    font-size:1.1rem;
+    color: rgba(60,74,48,0.45);
+    cursor:pointer;
+    line-height:1;
+    padding:6px;
+  }
+  .close-btn:hover{ color: var(--moss); }
+  .close-btn:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; border-radius:6px; }
+
+  .card-daisy-icon{
+    width:64px;
+    margin: 0 auto 18px;
+    animation: spin 22s linear infinite;
+  }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+
+  .message{
+    font-family:'Mali', cursive;
+    font-weight:600;
+    font-size: clamp(1.15rem, 3vw, 1.4rem);
+    line-height:1.7;
+    color: var(--moss);
+    margin: 0 0 26px;
+    min-height: 3.4em;
+  }
+
+  .again-btn{
+    font-family:'Sarabun', sans-serif;
+    font-weight:600;
+    font-size:0.92rem;
+    color: var(--sage-dark);
+    background: #F4EAD3;
+    border: 1.5px solid rgba(94,122,78,0.3);
+    border-radius:999px;
+    padding: 11px 22px;
+    cursor:pointer;
+    transition: background 0.18s ease, transform 0.15s ease;
+  }
+  .again-btn:hover{ background:#EFE0BE; transform: translateY(-1px); }
+  .again-btn:active{ transform: translateY(0) scale(0.97); }
+  .again-btn:focus-visible{ outline:2px solid var(--ring); outline-offset:2px; }
+
+  @media (max-width:420px){
+    .card{ padding:38px 24px 26px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .daisy-wrap, .daisy-sway, .card-daisy-icon, .overlay, .card{
+      animation:none !important;
+      transition:none !important;
+    }
+    .daisy-wrap{ opacity:1; transform:none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="meadow-bg"></div>
+  <div id="daisyLayer" class="daisy-layer" aria-hidden="true"></div>
+
+  <main class="hero">
+    <p class="eyebrow">กดดูแล้วจะรู้...</p>
+    <h1>อยากให้เธอรู้ 🌼</h1>
+    <p class="sub">กดปุ่มด้านล่าง แล้วปล่อยให้ดอกไม้บาน พร้อมส่งกำลังใจให้เธอสักนิด</p>
+    <button id="surpriseBtn" class="btn-surprise">กดตรงนี้เลย</button>
+  </main>
+
+  <div id="overlay" class="overlay">
+    <div id="card" class="card" role="dialog" aria-modal="true" aria-label="ข้อความให้กำลังใจ">
+      <button id="closeBtn" class="close-btn" aria-label="ปิด">✕</button>
+      <div id="cardIcon" class="card-daisy-icon"></div>
+      <p id="message" class="message"></p>
+      <button id="againBtn" class="again-btn">ขอกำลังใจอีกครั้ง 🌼</button>
+    </div>
+  </div>
+
+<script>
+  const messages = [
+    "วันนี้เธอเก่งมากแล้วนะ",
+    "ไม่เป็นไรเลยถ้าเธฮจะเหนื่อย พักได้เสมอ",
+    "ทุกก้าวที่เธอเดินมาล้วนมีความหมาย",
+    "เธอแข็งแกร่งกว่าที่คิดไว้เยอะเลย",
+    "พรุ่งนี้จะดีกว่าวันนี้แน่นอนเรามั่นใจ",
+    "มีคนภูมิใจในตัวเธอตรงนี้หนึ่งคนนะคั้บ",
+    "หายใจลึกๆ แล้วค่อยลุยต่อ ฮึ้บๆ",
+    "ไม่มีใครสมบูรณ์แบบ แคนี้ก็เก่งมากๆแล้วนะ",
+    "ถ้าเธอเหนื่อย เราอยู่ตรงนี้ตะเหม๋ออ",
+    "เธอทำดีที่สุดแล้วในแบบของเธอ",
+    "อย่าลืมให้กำลังใจตัวเองนะ เธฮหน่ะเก่งที่สูดด",
+    "วันนี้อาจจะยาก แต่เธอก็ผ่านมันมาได้",
+    "วันไหนเธอเหนื่อยหันมากอดๆได้เสมอ",
+    "ทุกความพยายามของเธอมีค่าเสมอ"
+  ];
+
+  const petalVariants = [
+    { petal:'#FFFFFF', center:'#F6C445' },
+    { petal:'#FFF6E5', center:'#E8A23C' },
+    { petal:'#FDEAE3', center:'#F6C445' },
+    { petal:'#FFFFFF', center:'#E8A23C' }
+  ];
+
+  function daisySVG(petalColor, centerColor){
+    let petals = '';
+    for(let i=0;i<8;i++){
+      const angle = i*45;
+      petals += '<ellipse cx="50" cy="19" rx="9" ry="19" fill="'+petalColor+'" stroke="rgba(60,74,48,0.08)" stroke-width="0.6" transform="rotate('+angle+' 50 50)" />';
+    }
+    const seeds = [
+      [50,44],[57,47],[55,55],[46,56],[42,48],[50,50]
+    ].map(p => '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="1.1" fill="rgba(60,74,48,0.18)" />').join('');
+
+    return '<svg viewBox="0 0 100 100" class="daisy-svg" width="100%" height="100%">' +
+      '<g>'+petals+'</g>' +
+      '<circle cx="50" cy="50" r="13" fill="'+centerColor+'" />' +
+      seeds +
+      '</svg>';
+  }
+
+  const layer = document.getElementById('daisyLayer');
+
+  function rand(min, max){ return Math.random() * (max - min) + min; }
+
+  function spawnDaisies(count){
+    layer.innerHTML = '';
+    const lanes = count;
+    for(let i=0; i<count; i++){
+      const wrap = document.createElement('div');
+      wrap.className = 'daisy-wrap';
+
+      const laneWidth = 100 / lanes;
+      const left = (laneWidth * i) + rand(2, laneWidth - 2);
+      wrap.style.left = left + 'vw';
+      wrap.style.animationDelay = rand(0, 0.55) + 's';
+
+      const size = rand(34, 62);
+      const tilt = rand(-9, 9);
+      const sway = document.createElement('div');
+      sway.className = 'daisy-sway';
+      sway.style.width = size + 'px';
+      sway.style.height = size + 'px';
+      sway.style.setProperty('--tilt-a', (tilt - 5) + 'deg');
+      sway.style.setProperty('--tilt-b', (tilt + 5) + 'deg');
+      sway.style.animationDelay = rand(0, 1.2) + 's';
+
+      const v = petalVariants[Math.floor(rand(0, petalVariants.length))];
+      sway.innerHTML = daisySVG(v.petal, v.center);
+
+      const stem = document.createElement('div');
+      stem.className = 'stem';
+      stem.style.height = rand(14, 30) + 'px';
+
+      wrap.appendChild(sway);
+      wrap.appendChild(stem);
+      layer.appendChild(wrap);
+    }
+  }
+
+  let lastIndex = -1;
+  function pickMessage(){
+    let idx;
+    do { idx = Math.floor(rand(0, messages.length)); } while(idx === lastIndex && messages.length > 1);
+    lastIndex = idx;
+    return messages[idx];
+  }
+
+  const overlay = document.getElementById('overlay');
+  const messageEl = document.getElementById('message');
+  const surpriseBtn = document.getElementById('surpriseBtn');
+  const againBtn = document.getElementById('againBtn');
+  const closeBtn = document.getElementById('closeBtn');
+  const cardIcon = document.getElementById('cardIcon');
+
+  cardIcon.innerHTML = daisySVG('#FFFFFF', '#F6C445');
+
+  const cornerTL = document.createElement('div');
+  cornerTL.className = 'corner-daisy tl';
+  cornerTL.innerHTML = daisySVG('#FFF6E5', '#E8A23C');
+  const cornerBR = document.createElement('div');
+  cornerBR.className = 'corner-daisy br';
+  cornerBR.innerHTML = daisySVG('#FFFFFF', '#F6C445');
+  document.getElementById('card').appendChild(cornerTL);
+  document.getElementById('card').appendChild(cornerBR);
+
+  function openSurprise(){
+    spawnDaisies(16);
+    messageEl.textContent = pickMessage();
+    overlay.classList.add('show');
+  }
+
+  function closeSurprise(){
+    overlay.classList.remove('show');
+  }
+
+  surpriseBtn.addEventListener('click', openSurprise);
+  againBtn.addEventListener('click', () => {
+    spawnDaisies(16);
+    messageEl.textContent = pickMessage();
+  });
+  closeBtn.addEventListener('click', closeSurprise);
+  overlay.addEventListener('click', (e) => { if(e.target === overlay) closeSurprise(); });
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeSurprise(); });
+</script>
+</body>
+</html>
